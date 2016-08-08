@@ -17,7 +17,7 @@ public class SimpleCanalServerAuthentication implements CanalServerAuthenticatio
     public void handleAuthentication(CanalPacket.ClientAuth clientAuth) {
         if (!Objects.equal(clientAuth.getUsername(), username)
                 || !Objects.equal(clientAuth.getPassword(), password)) {
-            new CanalServerException("authentication error. ");
+            throw new CanalServerException("authentication error. ");
         }
     }
 

@@ -3,6 +3,7 @@ package com.alibaba.otter.canal.deployer;
 import java.util.Map;
 import java.util.Properties;
 
+import com.alibaba.otter.canal.server.spi.impl.CanalServerAuthenticationFactory;
 import org.I0Itec.zkclient.IZkStateListener;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
 import org.apache.commons.lang.BooleanUtils;
@@ -93,6 +94,7 @@ public class CanalController {
         canalServer = CanalServerWithNetty.instance();
         canalServer.setIp(ip);
         canalServer.setPort(port);
+        canalServer.setCanalServerAuthentication(CanalServerAuthenticationFactory.createAuthentication(properties));
 
         // 处理下ip为空，默认使用hostIp暴露到zk中
         if (StringUtils.isEmpty(ip)) {

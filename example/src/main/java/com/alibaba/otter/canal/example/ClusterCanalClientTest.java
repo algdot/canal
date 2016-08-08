@@ -18,17 +18,17 @@ public class ClusterCanalClientTest extends AbstractCanalClientTest {
     }
 
     public static void main(String args[]) {
-        String destination = "example";
+        String destination = "family";
 
         // 基于固定canal server的地址，建立链接，其中一台server发生crash，可以支持failover
         // CanalConnector connector = CanalConnectors.newClusterConnector(
         // Arrays.asList(new InetSocketAddress(
-        // AddressUtils.getHostIp(),
+        // AddressUtils.getHostIp(),ps -
         // 11111)),
         // "stability_test", "", "");
 
         // 基于zookeeper动态获取canal server的地址，建立链接，其中一台server发生crash，可以支持failover
-        CanalConnector connector = CanalConnectors.newClusterConnector("127.0.0.1:2181", destination, "", "");
+        CanalConnector connector = CanalConnectors.newClusterConnector("172.16.254.2:35001,172.16.254.2:35002,172.16.254.2:35003", destination, "", "");
 
         final ClusterCanalClientTest clientTest = new ClusterCanalClientTest(destination);
         clientTest.setConnector(connector);

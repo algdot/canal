@@ -1,5 +1,6 @@
 package com.alibaba.otter.canal.server.netty.handler;
 
+import com.alibaba.otter.canal.server.spi.CanalServerAuthentication;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFuture;
@@ -34,6 +35,8 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
     private final int               SUPPORTED_VERSION                       = 3;
     private final int               defaultSubscriptorDisconnectIdleTimeout = 5 * 60 * 1000;
     private CanalServerWithEmbedded embeddedServer;
+
+    private CanalServerAuthentication canalServerAuthentication;
 
     public ClientAuthenticationHandler(){
 
@@ -71,7 +74,6 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
                         MDC.remove("destination");
                     }
                 }
-
                 NettyUtils.ack(ctx.getChannel(), new ChannelFutureListener() {
 
                     public void operationComplete(ChannelFuture future) throws Exception {
@@ -110,6 +112,7 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
                     }
 
                 });
+                canalServerAuthentication.handleAuthentication(clientAuth);
                 break;
         }
     }
@@ -118,4 +121,7 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
         this.embeddedServer = embeddedServer;
     }
 
+    public void setCanalServerAuthentication(CanalServerAuthentication canalServerAuthentication) {
+        this.canalServerAuthentication = canalServerAuthentication;
+    }
 }

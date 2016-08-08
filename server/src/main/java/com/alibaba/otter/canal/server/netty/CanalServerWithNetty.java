@@ -3,6 +3,7 @@ package com.alibaba.otter.canal.server.netty;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
+import com.alibaba.otter.canal.server.spi.CanalServerAuthentication;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -33,6 +34,8 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
     private Channel                 serverChannel = null;
     private ServerBootstrap         bootstrap     = null;
 
+    private CanalServerAuthentication canalServerAuthentication;
+
     private static class SingletonHolder {
 
         private static final CanalServerWithNetty CANAL_SERVER_WITH_NETTY = new CanalServerWithNetty();
@@ -60,11 +63,13 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
 
             public ChannelPipeline getPipeline() throws Exception {
+                 ClientAuthenticationHandler authenticationHandler = new ClientAuthenticationHandler(embeddedServer);
+                authenticationHandler.setCanalServerAuthentication(canalServerAuthentication);
+
                 ChannelPipeline pipelines = Channels.pipeline();
                 pipelines.addLast(FixedHeaderFrameDecoder.class.getName(), new FixedHeaderFrameDecoder());
                 pipelines.addLast(HandshakeInitializationHandler.class.getName(), new HandshakeInitializationHandler());
-                pipelines.addLast(ClientAuthenticationHandler.class.getName(),
-                    new ClientAuthenticationHandler(embeddedServer));
+                pipelines.addLast(ClientAuthenticationHandler.class.getName(), authenticationHandler);
 
                 SessionHandler sessionHandler = new SessionHandler(embeddedServer);
                 pipelines.addLast(SessionHandler.class.getName(), sessionHandler);
@@ -108,4 +113,7 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
         this.embeddedServer = embeddedServer;
     }
 
+    public void setCanalServerAuthentication(CanalServerAuthentication canalServerAuthentication) {
+        this.canalServerAuthentication = canalServerAuthentication;
+    }
 }
