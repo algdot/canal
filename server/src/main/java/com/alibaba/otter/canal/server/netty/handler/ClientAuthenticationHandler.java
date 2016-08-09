@@ -50,6 +50,7 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
                 case SUPPORTED_VERSION:
                 default:
                     final ClientAuth clientAuth = ClientAuth.parseFrom(packet.getBody());
+                    canalServerAuthentication.handleAuthentication(clientAuth);
                     // 如果存在订阅信息
                     if (StringUtils.isNotEmpty(clientAuth.getDestination())
                             && StringUtils.isNotEmpty(clientAuth.getClientId())) {
@@ -71,7 +72,6 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
                             MDC.remove("destination");
                         }
                     }
-                    canalServerAuthentication.handleAuthentication(clientAuth);
                     NettyUtils.ack(ctx.getChannel(), new ChannelFutureListener() {
 
                         public void operationComplete(ChannelFuture future) throws Exception {
