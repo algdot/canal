@@ -20,6 +20,7 @@
 				<include>**/*</include>
 			</includes>
 			<fileMode>0755</fileMode>
+			<lineEnding>unix</lineEnding>
 		</fileSet>
 		<fileSet>
 			<directory>./src/main/conf</directory>

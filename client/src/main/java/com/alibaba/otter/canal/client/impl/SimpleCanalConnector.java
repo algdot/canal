@@ -67,8 +67,8 @@ public class SimpleCanalConnector implements CanalConnector {
     private boolean              rollbackOnDisConnect  = false;                                              // 是否在connect链接成功后，自动执行rollback操作
 
     // 读写数据分别使用不同的锁进行控制，减小锁粒度,读也需要排他锁，并发度容易造成数据包混乱，反序列化失败
-    private Object               readDataLock          = new Object();
-    private Object               writeDataLock         = new Object();
+    private final Object readDataLock  = new Object();
+    private final Object writeDataLock = new Object();
 
     public SimpleCanalConnector(SocketAddress address, String username, String password, String destination){
         this(address, username, password, destination, 60000);
@@ -144,6 +144,7 @@ public class SimpleCanalConnector implements CanalConnector {
             //
             ClientAuth ca = ClientAuth.newBuilder()
                 .setUsername(username != null ? username : "")
+                .setPassword(ByteString.copyFromUtf8(password != null ? password : ""))
                 .setNetReadTimeout(soTimeout)
                 .setNetWriteTimeout(soTimeout)
                 .build();
